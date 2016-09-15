@@ -1,0 +1,32 @@
+Source: symfony-bundle-datacryptographer
+Section: admin
+Priority: optional
+Maintainer: Cédric Dufour <cedric.dufour@idiap.ch>
+Build-Depends: debhelper (>= 8)
+Build-Depends-Indep: php-pear
+Homepage: http://www.idiap.ch/scientific-research/resources/symfony-bundle-datacryptographer
+Standards-Version: 3.9.4
+
+Package: symfony-bundle-datacryptographer
+Architecture: all
+Depends: ${misc:Depends}, libapache2-mod-php5 | php5-cgi
+Suggests: php-symfony (>=2.3)
+Description: PHP/Symfony Data Cryptographer Bundle
+ The Data Cryptographer Bundle is a PHP/Symfony bundle which provides a cryptographer
+ resource/service for common cryptographic operations:
+  - data hash (digest/integrity code)
+  - key derivation/hash
+  - data MAC (authentication code)
+  - data en/decipherment (encryption/decryption)
+ .
+ Along matching Doctrine/DBAL data types:
+  - hash_string
+  - keyhash_string
+  - cipher_string/cipher_text
+ which allow to transparently perform the given cryptographic operations on data being
+ persisted/retrieved to/from database.
+
+Package: symfony-bundle-datacryptographer-doc
+Architecture: all
+Recommends: symfony-bundle-datacryptographer
+Description: PHP/Symfony Data Cryptographer Bundle - Documentation

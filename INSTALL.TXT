@@ -1,0 +1,97 @@
+Data Cryptographer Bundle
+=========================
+
+BUILD
+-----
+
+NOTE: By "build", we mean create the necessary tarballs/package required for
+      installation (according to the INSTALL section below) or distribution.
+
+1. [MUST] Obtain the source tarball:
+
+   $ git clone https://github.com/idiap/symfony-bundle-datacryptographer
+
+   OR
+
+   $ tar -xjf symfony-bundle-datacryptographer-source-%{VERSION}.tar.bz2
+   $ cd symfony-bundle-datacryptographer-source-%{VERSION}
+
+2. [MAY] (Re-)build the source tarball:
+
+   $ ./debian/rules build-source-tarball
+   $ ls -al ../symfony-bundle-datacryptographer-source-%{VERSION}.tar.bz2
+
+3. [MAY] Build the installation tarball:
+
+   $ ./debian/rules build-install-tarball
+   $ ls -al ../symfony-bundle-datacryptographer-%{VERSION}.tar.bz2
+
+4. [MAY] Build the documentation tarball:
+
+   $ ./debian/rules build-doc-tarball
+   $ ls -al ../symfony-bundle-datacryptographer-doc-%{VERSION}.tar.bz2
+
+5. [MAY] Build the debian packages:
+
+   $ debuild -us -uc -b
+   $ ls -al ../symfony-bundle-datacryptographer_%{VERSION}_all.deb ../symfony-bundle-datacryptographer-doc_%{VERSION}_all.deb
+
+6. [MAY] Build the debian source package:
+
+   $ debuild -I'.git*' -us -uc -S
+   $ ls -al ../symfony-bundle-datacryptographer_%{VERSION}.dsc ../symfony-bundle-datacryptographer_%{VERSION}.tar.gz
+
+OR
+
+2-6. [SHOULD] Do it all with a single command
+
+   $ ./debian/rules release
+
+
+INSTALL
+-------
+
+WARNING:
+   The Data Cryptographer Bundle is actively maintained on Linux.
+   It has not been tested on other platforms.
+
+NOTE:
+   We assume a previously working PHP/Symfony setup.
+
+1. [MUST] Install the Data Cryptographer Bundle:
+
+   a. using the installation tarball:
+
+      $ INSTALL_DIR='<installation-directory>'
+      $ cd "${INSTALL_DIR}"
+      $ tar -xjf symfony-bundle-datacryptographer-%{VERSION}.tar.bz2
+
+   OR
+
+   b. using the debian package:
+
+      $ dpkg -i symfony-bundle-datacryptographer_%{VERSION}_all.deb
+
+2. [MAY] Install the Data Cryptographer Bundle documentation:
+
+   a. using the documentation tarball:
+
+      $ DOC_DIR='<documentation-directory>'
+      $ cd "${DOC_DIR}"
+      $ tar -xjf symfony-bundle-datacryptographer-doc-%{VERSION}.tar.bz2
+
+   OR
+
+   b. using the debian package:
+
+      $ dpkg -i symfony-bundle-datacryptographer-doc_%{VERSION}_all.deb
+
+   OR
+
+   c. using the source tarball (and PhpDocumentor):
+   
+      $ DOC_DIR='<documentation-directory>'
+      $ pear install -o PhpDocumentor
+      $ tar -xjf symfony-bundle-datacryptographer-source-%{VERSION}.tar.bz2
+      $ cd symfony-bundle-datacryptographer-%{VERSION}
+      $ ./doc/util/makedoc DataCryptographerBundle "PHP/Symfony Data Cryptographer Bundle" "${DOC_DIR}" src doc/phpdoc

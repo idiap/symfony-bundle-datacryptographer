@@ -1,0 +1,17 @@
+# DataCryptographerBundle\Resources\config\services.yml
+parameters:
+    datacryptographer.password:
+    datacryptographer.password_algorithm: 'P2SHA256'
+    datacryptographer.hash_algorithm: 'HSHA256'
+    datacryptographer.key_algorithm: 'P2SHA256'
+    datacryptographer.key_iterations: 100000
+    datacryptographer.mac_algorithm: 'HSHA256'
+    datacryptographer.mac_salt:
+    datacryptographer.cipher_algorithm: 'AES256'
+    datacryptographer.cipher_salt:
+    datacryptographer.strict: true
+
+services:
+  DataCryptographer:
+    class: DataCryptographerBundle\DataCryptographer
+    arguments: [%datacryptographer.password%, %datacryptographer.password_algorithm%, 1, %datacryptographer.hash_algorithm%, %datacryptographer.key_algorithm%, %datacryptographer.key_iterations%, %datacryptographer.mac_algorithm%, %datacryptographer.mac_salt%, %datacryptographer.cipher_algorithm%, %datacryptographer.cipher_salt%, %datacryptographer.strict%]

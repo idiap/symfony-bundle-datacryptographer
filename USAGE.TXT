@@ -1,0 +1,137 @@
+Data Cryptographer Bundle
+=========================
+
+CONFIGURATION
+-------------
+
+The Data Cryptographer Bundle integrates Symfony the same way as any other
+bundle. Thus, make sure to:
+ - add the corresponding namespace to your application 'autoload.php'
+ - instantiate the DataCryptographerBundle in your application 'AppKernel.php'
+
+In order to use this bundle's data types in your applications, the following
+declaration MUST be added to your configuration:
+
+  doctrine:
+    dbal:
+      types:
+        hash_string: DataCryptographerBundle\DBAL\Types\HashStringType
+        keyhash_string: DataCryptographerBundle\DBAL\Types\KeyHashStringType
+        cipher_string: DataCryptographerBundle\DBAL\Types\CipherStringType
+        cipher_text: DataCryptographerBundle\DBAL\Types\CipherTextType
+
+The following parameters are available to configure the cryptographer service:
+
+  datacryptographer.password: [no default; MUST be supplied]
+    The cryptographer password, from which the internal MAC and cipher keys
+    will be derived (using the ad-hoc salt; see below)
+    THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
+    A cryptographically strong password MAY be used:
+      $ dd if=/dev/urandom bs=2048 count=1 \
+        | sha256sum \
+        | sed 's/^\([^ ]*\).*$/{HEX}\1/'
+
+  datacryptographer.password_algorithm: P2SHA256
+    The password <-> internal key derivation algorithm
+    THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
+   
+  datacryptographer.hash_algorithm: HSHA256
+    The default hash algorithm (used when persisting new entities)
+   
+  datacryptographer.key_algorithm: P2SHA256
+    The default key derivation algorithm (used when persisting new entities)
+   
+  datacryptographer.key_iterations: 100000
+    The default key derivation iterations count (used when persisting new entities)
+   
+  datacryptographer.mac_algorithm: HSHA256
+    The default MAC algorithm (used when persisting new entities)
+   
+  datacryptographer.mac_salt: [no default; MUST be supplied]
+    The salt used to derive the internal MAC key from the password
+    THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
+    A cryptographically strong salt SHOULD be used:
+      $ dd if=/dev/urandom bs=2048 count=1 \
+        | sha256sum \
+        | sed 's/^\([^ ]*\).*$/{HEX}\1/'
+   
+  datacryptographer.cipher_algorithm: AES256
+    The default (en/de)cipher algorithm (used when persisting new entities)
+   
+  datacryptographer.cipher_salt: [no default; MUST be supplied]
+    The salt used to derive the internal cipher key from the password
+    THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
+    A cryptographically strong salt SHOULD be used:
+      $ dd if=/dev/urandom bs=2048 count=1 \
+        | sha256sum \
+        | sed 's/^\([^ ]*\).*$/{HEX}\1/'
+   
+  datacryptographer.strict: true
+    In strict-mode, all misconfiguration or (data) input error will result in
+    PHP exception being thrown. This is (highly) recommended for production sites.
+
+Available hash algorithms are:
+  MD5, SHA1, SHA224, SHA256, SHA384, SHA512
+along their salted variant (using the HMAC function):
+  HMD5, HSHA1, HSHA224, HSHA256, HSHA384, HSHA512
+(as well as '-'/No-op for test purposes)
+
+Available key derivations algorithms are:
+  [PBKDF2] P2MD5, P2SHA1, P2SHA224, P2SHA256, P2SHA384, P2SHA512
+(as well as '-'/No-op for test purposes)
+
+Available MAC algorithms are:
+  [HMAC] HMD5, HSHA1, HSHA224, HSHA256, HSHA384, HSHA512
+(as well as '-'/No-op for test purposes)
+
+Available cipher algorithms are:
+  3DES, AES128, AES192, AES256, BF128, BF192, BF256, BF320, BF384, BF448
+(as well as '-'/No-op for test/migration purposes)
+
+Available encoding algorithms are:
+  B64, HEX
+(as well as '-'/No-op for test/migration purposes)
+
+
+USAGE
+-----
+
+In order to seamlessly perform cryptographic operations on data entity fields,
+one just need to change the type of the field, among one of:
+
+  hash_string
+    Cryptographic hash (digest/integrity code)
+    WARNING! THIS OPERATION IS IRREVERSIBLE!
+             ONCE CARRIED OUT, ORIGINAL DATA ARE IRRECOVERABLE!
+
+  keyhash_string
+    Cryptographic key hash (key derivation with random salt)
+    WARNING! THIS OPERATION IS IRREVERSIBLE!
+             ONCE CARRIED OUT, ORIGINAL DATA ARE IRRECOVERABLE!
+
+  cipher_string/cipher_text
+    Cryptographic encipherment/decipherment (encryption/decryption)
+    NOTE: Once enciphered, the original cleartext data may be recovered
+          by switching all cryptographer algorithms to '-'/No-op.
+
+Then, after triple-checking all DataCryptographer parameters (password/salts),
+one must TEMPORARILY disable its "strict mode" and update all affected
+entities/fields using the ad-hoc command line:
+
+  php ./app/console datacryptographer:update <entity-name>
+
+This will detect all DataCryptographer-related fields in the given entity, loop
+through all its entries, and update their content with their corresponding
+cryptographic counterpart (hash/MAC/cipher). When done, one should re-enable
+the DataCryptographer "strict mode".
+
+Its always possible to change the default algorithms (used when persisting new
+entities) afterwards. Existing data will still be usable after this change:
+non-reversible operations data will be kept "as-is" (forever), while reversible
+cipher data will use the new algorithms as soon as they are updated, either by
+the user or by using the 'datacryptographer:update' command (the latter being
+the recommended course of action).
+
+Of course, the DataCryptographer class can also be instantiated and used
+independently of the database abstraction layer, for any purpose you may deem it
+fit for.

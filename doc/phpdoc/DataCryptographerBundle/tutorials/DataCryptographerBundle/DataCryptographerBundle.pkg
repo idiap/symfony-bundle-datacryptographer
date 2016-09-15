@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- -*- mode:xml; tab-width:2; c-basic-offset:2; intent-tabs-mode:nil; -*- ex: set tabstop=2 expandtab: -->
+
+<refentry id="{@id}">
+
+  <refnamediv>
+    <refname>PHP/Symfony Data Cryptographer Bundle</refname>
+    <refpurpose>Forget all about cryptography. Concentrate entirely on the model.</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <author>
+      Cédric Dufour, Idiap Research Institute
+      <authorblurb>{@link http://www.idiap.ch/scientific-research/resources/symfony-bundle-datacryptographer http://www.idiap.ch/scientific-research/resources/symfony-bundle-datacryptographer}</authorblurb>
+    </author>
+  </refsynopsisdiv>
+
+  {@toc}
+
+  <refsect1 id="{@id whatis}">
+    <title>What is the Data Cryptographer Bundle ?</title>
+    <para>The <firstterm>Data Cryptographer Bundle</firstterm> is a <literal>PHP/Symfony</literal> bundle which provides a cryptographer resource/service for common cryptographic operations:</para>
+    <itemizedList>
+      <listitem>data <emphasis>hash</emphasis> (digest/integrity code)</listitem>
+      <listitem><emphasis>key derivation/hash</emphasis></listitem>
+      <listitem>data <emphasis>MAC</emphasis> (authentication code)</listitem>
+      <listitem>data <emphasis>en/decipherment</emphasis> (encryption/decryption)</listitem>
+    </itemizedList>
+    <para>Along matching <literal>Doctrine/DBAL</literal> data types:</para>
+    <itemizedList>
+      <listitem><code>hash_string</code></listitem>
+      <listitem><code>keyhash_string</code></listitem>
+      <listitem><code>cipher_string</code>/<code>cipher_text</code></listitem>
+    </itemizedList>
+    <para>which allow to transparently perform the given cryptographic operations on data being persisted/retrieved to/from database.</para>
+  </refsect1>
+
+
+  <refsect1 id="{@id specs}">
+    <title>Specifications</title>
+
+    <refsect2 id="{@id specs_depends}">
+      <title>Dependencies</title>
+      <itemizedList>
+        <listitem>[MUST] <literal>Symfony 2.7</literal> or later</listitem>
+        <listitem>[MUST] <literal>PHP 5.6</literal> or later</listitem>
+      </itemizedList>
+    </refsect2>
+
+  </refsect1>
+
+
+  <refsect1 id="{@id licence}">
+    <title>Licensing</title>
+    <para>The Data Cryptographer Bundle is distributed under the <emphasis>GNU General Public Licence (GPL) Version 3</emphasis>. The PHP Data Cryptographer Bundle includes all resources which contain the mention <literal>Data Cryptographer Bundle</literal> in their documentation and licensing preamble.</para>
+    <para>Other Open Source resources may come bundled with teh Data Cryptographer Bundle release packaging; they are (and must be) used according to their original licence (look for copyright-related files in the folder hierarchy).</para>
+  </refsect1>
+
+
+  <refsect1 id="{@id download}">
+    <title>Downloading</title>
+    <para>{@link https://github.com/idiap/symfony-bundle-datacryptographer/releases download tree...}</para>
+  </refsect1>
+
+
+  <refsect1 id="{@id build}">
+    <title>Build</title>
+    <para><emphasis>NOTE:</emphasis> By &quot;build&quot;, we mean create the necessary tarballs/package required for installation (according to the Installation section below) or distribution.</para>
+
+    <refsect2 id="{@id build_tree}">
+      <title>[MUST] Obtain the source code</title>
+      <screen>
+        <![CDATA[
+  $ git clone https://github.com/idiap/symfony-bundle-datacryptographer
+        ]]>
+      </screen>
+      <para>[OR]</para>
+      <screen>
+        <![CDATA[
+  $ tar -xjf symfony-bundle-datacryptographer-source-%{VERSION}.tar.bz2
+  $ cd symfony-bundle-datacryptographer-%{VERSION}
+        ]]>
+      </screen>
+    </refsect2>
+
+    <refsect2 id="{@id build_source}">
+      <title>[MAY] (Re-)build the source tarball</title>
+      <screen>
+        <![CDATA[
+  $ ./debian/rules build-source-tarball
+  $ ls -al ../symfony-bundle-datacryptographer-source-%{VERSION}.tar.bz2
+        ]]>
+      </screen>
+    </refsect2>
+
+    <refsect2 id="{@id build_install}">
+      <title>[MAY] Build the installation tarball</title>
+      <screen>
+        <![CDATA[
+  $ ./debian/rules build-install-tarball
+  $ ls -al ../symfony-bundle-datacryptographer-%{VERSION}.tar.bz2
+        ]]>
+      </screen>
+    </refsect2>
+
+    <refsect2 id="{@id build_doc}">
+      <title>[MAY] Build the documentation tarball</title>
+      <screen>
+        <![CDATA[
+  $ ./debian/rules build-doc-tarball
+  $ ls -al ../symfony-bundle-datacryptographer-doc-%{VERSION}.tar.bz2
+        ]]>
+      </screen>
+    </refsect2>
+
+    <refsect2 id="{@id build_debian}">
+      <title>[MAY] Build the debian packages</title>
+      <screen>
+        <![CDATA[
+  $ debuild -us -uc -b
+  $ ls -al ../symfony-bundle-datacryptographer_%{VERSION}_all.deb ../symfony-bundle-datacryptographer-doc_%{VERSION}_all.deb
+        ]]>
+      </screen>
+    </refsect2>
+
+    <refsect2 id="{@id build_debian_source}">
+      <title>[MAY] Build the debian source package</title>
+      <screen>
+        <![CDATA[
+  $ debuild -I'.git*' -us -uc -S
+  $ ls -al ../symfony-bundle-datacryptographer_%{VERSION}.dsc ../symfony-bundle-datacryptographer_%{VERSION}.tar.gz
+        ]]>
+      </screen>
+    </refsect2>
+
+    <refsect2 id="{@id build_all}">
+      <title>[SHOULD] Do it all with a single command</title>
+      <screen>
+        <![CDATA[
+  $ ./debian/rules release
+        ]]>
+      </screen>
+    </refsect2>
+
+  </refsect1>
+
+
+  <refsect1 id="{@id install}">
+    <title>Installation</title>
+    <para><emphasis>WARNING: The Data Cryptographer Bundle is actively maintained on Linux. It has not been tested on other platforms.</emphasis></para>
+    <para><emphasis>NOTE:</emphasis> We assume a previously working PHP/Symfony setup.</para>
+
+    <refsect2 id="{@id install_php}">
+      <title>[MUST] Install the Data Cryptographer Bundle</title>
+
+      <refsect3 id="{@id install_php_release}">
+        <title>[OR] using the installation tarball</title>
+        <screen>
+          <![CDATA[
+  $ INSTALL_DIR='<installation-directory>'
+  $ cd "${INSTALL_DIR}"
+  $ tar -xjf symfony-bundle-datacryptographer-%{VERSION}.tar.bz2
+          ]]>
+        </screen>
+      </refsect3>
+
+      <refsect3 id="{@id install_php_debian}">
+        <title>[OR] using the debian package</title>
+        <screen>
+          <![CDATA[
+  $ dpkg -i symfony-bundle-datacryptographer_%{VERSION}_all.deb
+          ]]>
+        </screen>
+      </refsect3>
+
+    </refsect2>
+
+    <refsect2 id="{@id install_doc}">
+      <title>[MAY] Install the Data Cryptographer Bundle documentation</title>
+
+      <refsect3 id="{@id install_doc_release}">
+        <title>[OR] using the documentation tarball</title>
+        <screen>
+          <![CDATA[
+  $ DOC_DIR='<documentation-directory>'
+  $ cd "${DOC_DIR}"
+  $ tar -xjf symfony-bundle-datacryptographer-doc-%{VERSION}.tar.bz2
+          ]]>
+        </screen>
+      </refsect3>
+
+      <refsect3 id="{@id install_doc_debian}">
+        <title>[OR] using the debian package</title>
+        <screen>
+          <![CDATA[
+  $ dpkg -i symfony-bundle-datacryptographer-doc_%{VERSION}_all.deb
+          ]]>
+        </screen>
+      </refsect3>
+
+      <refsect3 id="{@id install_doc_source}">
+        <title>[OR] using the source tarball (and PhpDocumentor)</title>
+        <screen>
+          <![CDATA[
+  $ DOC_DIR='<documentation-directory>'
+  $ pear install -o PhpDocumentor
+  $ tar -xjf symfony-bundle-datacryptographer-source-%{VERSION}.tar.bz2
+  $ cd symfony-bundle-datacryptographer-%{VERSION}
+  $ ./doc/util/makedoc DataCryptographerBundle "PHP/Symfony Data Cryptographer Bundle" "${DOC_DIR}" src doc/phpdoc
+          ]]>
+        </screen>
+      </refsect3>
+
+    </refsect2>
+
+  </refsect1>
+
+
+  <refsect1 id="{@id configuration}">
+    <title>Configuration</title>
+
+    <refsect2 id="{@id configuration_symfony}">
+      <title>Symfony</title>
+      <para>The Data Cryptographer Bundle integrates Symfony the same way as any other bundle. Thus, make sure to:</para>
+      <itemizedList>
+        <listitem>add the corresponding namespace to your application <emphasis>autoload.php</emphasis></listitem>
+        <listitem>instantiate the <literal>DataCryptographerBundle</literal> in your application <emphasis>AppKernel.php</emphasis></listitem>
+      </itemizedList>
+    </refsect2>
+
+    <refsect2 id="{@id configuration_dbal}">
+      <title>Doctrine/DBAL</title>
+      <para>In order to use this bundle's data types in your applications, the following declaration MUST be added to your configuration:</para>
+      <screen>
+        <![CDATA[
+  doctrine:
+    dbal:
+      types:
+        hash_string: DataCryptographerBundle\DBAL\Types\HashStringType
+        keyhash_string: DataCryptographerBundle\DBAL\Types\KeyHashStringType
+        cipher_string: DataCryptographerBundle\DBAL\Types\CipherStringType
+        cipher_text: DataCryptographerBundle\DBAL\Types\CipherTextType
+        ]]>
+      </screen>
+    </refsect2>
+
+    <refsect2 id="{@id configuration_cryptographer}">
+      <title>DataCryptographer</title>
+
+      <refsect3 id="{@id configuration_cryptographer_parameters}">
+        <title>Parameters</title>
+        <para>The following parameters are available to configure the cryptographer service:</para>
+        <itemizedList>
+          <listitem>
+            <code>datacryptographer.password</code>: [no default; MUST be supplied]
+            <para>The cryptographer password, from which the internal MAC and cipher keys will be derived (using the ad-hoc salt; see below).
+            THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.
+            A cryptographically strong password MAY be used:</para>
+            <screen>
+              <![CDATA[
+  $ dd if=/dev/urandom bs=2048 count=1 | sha256sum | sed 's/^\([^ ]*\).*$/{HEX}\1/'
+              ]]>
+            </screen>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.password_algorithm</code>: P2SHA256
+            <para>The password &lt;-&gt; internal key derivation algorithm.
+            THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.</para>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.hash_algorithm</code>: HSHA256
+            <para>The default hash algorithm (used when persisting new entities)</para>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.key_algorithm</code>: P2SHA256
+            <para>The default key derivation algorithm (used when persisting new entities)</para>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.key_iterations</code>: 100000
+            <para>The default key derivation iterations count (used when persisting new entities)</para>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.mac_algorithm</code>: HSHA256
+            <para>The default MAC algorithm (used when persisting new entities)</para>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.mac_salt</code>: [no default; MUST be supplied]
+            <para>The salt used to derive the internal MAC key from the password.
+            THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.
+            A cryptographically strong salt SHOULD be used:</para>
+            <screen>
+              <![CDATA[
+  $ dd if=/dev/urandom bs=2048 count=1 | sha256sum | sed 's/^\([^ ]*\).*$/{HEX}\1/'
+              ]]>
+            </screen>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.cipher_algorithm</code>: AES256
+            <para>The default (en/de)cipher algorithm (used when persisting new entities)</para>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.cipher_salt</code>: [no default; MUST be supplied]
+            <para>The salt used to derive the internal cipher key from the password.
+            THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.
+            A cryptographically strong salt SHOULD be used:</para>
+            <screen>
+              <![CDATA[
+  $ dd if=/dev/urandom bs=2048 count=1 | sha256sum | sed 's/^\([^ ]*\).*$/{HEX}\1/'
+              ]]>
+            </screen>
+          </listitem>
+          <listitem>
+            <code>datacryptographer.strict</code>: true
+            <para>In strict-mode, all misconfiguration or (data) input error will result in PHP exception being thrown. This is (highly) recommended for production sites.</para>
+          </listitem>
+        </itemizedList>
+      </refsect3>
+
+      <refsect3 id="{@id configuration_cryptographer_algorihtms}">
+        <title>Algorithms</title>
+        <para>Available hash algorithms are:</para>
+        <itemizedList>
+          <listitem>
+            <para><code>MD5</code>, <code>SHA1</code>, <code>SHA224</code>, <code>SHA256</code>, <code>SHA384</code>, <code>SHA512</code></para>
+          </listitem>
+          <listitem>
+            <para>along their salted variant (using the <literal>HMAC</literal> function): <code>HMD5</code>, <code>HSHA1</code>, <code>HSHA224</code>, <code>HSHA256</code>, <code>HSHA384</code>, <code>HSHA512</code></para>
+          </listitem>
+          <listitem>
+            <para>(as well as <code>-</code>/<literal>No-op</literal> for test purposes)</para>
+          </listitem>
+        </itemizedList>
+        <para>Available key derivations algorithms are:</para>
+        <itemizedList>
+          <listitem>
+            <para>[<literal>PBKDF2</literal>] <code>P2MD5</code>, <code>P2SHA1</code>, <code>P2SHA224</code>, <code>P2SHA256</code>, <code>P2SHA384</code>, <code>P2SHA512</code></para>
+          </listitem>
+          <listitem>
+            <para>(as well as <code>-</code>/<literal>No-op</literal> for test purposes)</para>
+          </listitem>
+        </itemizedList>
+        <para>Available MAC algorithms are:</para>
+        <itemizedList>
+          <listitem>
+            <para>[<literal>HMAC</literal>] <code>HMD5</code>, <code>HSHA1</code>, <code>HSHA224</code>, <code>HSHA256</code>, <code>HSHA384</code>, <code>HSHA512</code></para>
+          </listitem>
+          <listitem>
+            <para>(as well as <code>-</code>/<literal>No-op</literal> for test purposes)</para>
+          </listitem>
+        </itemizedList>
+        <para>Available cipher algorithms are:</para>
+        <itemizedList>
+          <listitem>
+            <para><code>3DES</code>, <code>AES128</code>, <code>AES192</code>, <code>AES256</code>, <code>BF128</code>, <code>BF192</code>, <code>BF256</code>, <code>BF320</code>, <code>BF384</code>, <code>BF448</code></para>
+          </listitem>
+          <listitem>
+            <para>(as well as <code>-</code>/<literal>No-op</literal> for test purposes)</para>
+          </listitem>
+        </itemizedList>
+        <para>Available encoding algorithms are:</para>
+        <itemizedList>
+          <listitem>
+            <para><code>B64</code>, <code>HEX</code></para>
+          </listitem>
+          <listitem>
+            <para>(as well as <code>-</code>/<literal>No-op</literal> for test purposes)</para>
+          </listitem>
+        </itemizedList>
+      </refsect3>
+    
+    </refsect2>
+    
+  </refsect1>
+
+
+  <refsect1 id="{@id usage}">
+    <title>Usage</title>
+    <para>In order to seamlessly perform cryptographic operations on data entity fields, one just need to change the type of the field, among one of:</para>
+    <itemizedList>
+      <listitem>
+        <code>hash_string</code>
+        <para>Cryptographic hash (digest/integrity code);
+        WARNING! THIS OPERATION IS IRREVERSIBLE!
+        ONCE CARRIED OUT, ORIGINAL DATA ARE IRRECOVERABLE!</para>
+      </listitem>
+      <listitem>
+        <code>keyhash_string</code>
+        <para>Cryptographic key hash (key derivation with random salt);
+        WARNING! THIS OPERATION IS IRREVERSIBLE!
+        ONCE CARRIED OUT, ORIGINAL DATA ARE IRRECOVERABLE!</para>
+      </listitem>
+      <listitem>
+        <code>cipher_string</code>/<code>cipher_text</code>
+        <para>Cryptographic encipherment/decipherment (encryption/decryption)
+        NOTE: Once enciphered, the original cleartext data may be recovered by switching all cryptographer algorithms to <code>-</code>/<literal>No-op</literal>.</para>
+      </listitem>
+    </itemizedList>
+    <para>Then, after triple-checking all DataCryptographer parameters (password/salts), one must TEMPORARILY disable its &quot;strict mode&quot; and update all affected entities/fields using the ad-hoc command line:</para>
+    <screen>
+      <![CDATA[
+  $ php ./app/console datacryptographer:update <entity-name>
+      ]]>             
+    </screen>
+    <para>This will detect all DataCryptographer-related fields in the given entity, loop through all its entries, and update their content with their corresponding cryptographic counterpart (hash/MAC/cipher). When done, one should re-enable the DataCryptographer <literal>strict mode</literal>.</para>
+    <para>Its always possible to change the default algorithms (used when persisting new entities) afterwards. Existing data will still be usable after this change: non-reversible operations data will be kept &quot;as-is&quot; (forever), while reversible cipher data will use the new algorithms as soon as they are updated, either by the user or by using the 'datacryptographer:update' command (the latter being the recommended course of action).</para>
+    <para>Of course, the DataCryptographer class can also be instantiated and used independently of the database abstraction layer, for any purpose you may deem it fit for.</para>
+  </refsect1>
+
+
+  <refsect1 id="{@id documentation}">
+    <title>Further documentation</title>
+    <para>The full documentation of the Data Cryptographer Bundle (including source code) is part of this (phpDocumentor-generated) HTML documentation; make sure to browse through the expandable tree located on the left of this text, as well as switch the documentation context using the drop list located on top of this text.</para>
+  </refsect1>
+
+</refentry> 
