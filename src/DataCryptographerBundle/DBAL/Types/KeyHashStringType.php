@@ -49,7 +49,7 @@ use Doctrine\DBAL\Types\StringType;
  * doctrine:
  *   dbal:
  *     types:
- *       keyhash_string: DataCryptographerBundle\DBAL\Types\KeyHashStringType
+ *       keyhash_string: 'DataCryptographerBundle\DBAL\Types\KeyHashStringType'
  * </CODE>
  *
  * @package    DataCryptographerBundle

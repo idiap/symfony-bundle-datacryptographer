@@ -47,7 +47,7 @@ use Doctrine\DBAL\Types\TextType;
  * doctrine:
  *   dbal:
  *     types:
- *       cipher_text: DataCryptographerBundle\DBAL\Types\CipherTextType
+ *       cipher_text: 'DataCryptographerBundle\DBAL\Types\CipherTextType'
  * </CODE>
  *
  * @package    DataCryptographerBundle

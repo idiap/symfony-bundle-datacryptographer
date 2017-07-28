@@ -236,10 +236,10 @@
   doctrine:
     dbal:
       types:
-        hash_string: DataCryptographerBundle\DBAL\Types\HashStringType
-        keyhash_string: DataCryptographerBundle\DBAL\Types\KeyHashStringType
-        cipher_string: DataCryptographerBundle\DBAL\Types\CipherStringType
-        cipher_text: DataCryptographerBundle\DBAL\Types\CipherTextType
+        hash_string: 'DataCryptographerBundle\DBAL\Types\HashStringType'
+        keyhash_string: 'DataCryptographerBundle\DBAL\Types\KeyHashStringType'
+        cipher_string: 'DataCryptographerBundle\DBAL\Types\CipherStringType'
+        cipher_text: 'DataCryptographerBundle\DBAL\Types\CipherTextType'
         ]]>
       </screen>
     </refsect2>
@@ -252,7 +252,7 @@
         <para>The following parameters are available to configure the cryptographer service:</para>
         <itemizedList>
           <listitem>
-            <code>datacryptographer.password</code>: [no default; MUST be supplied]
+            <code>datacryptographer.password</code>: '[no default; MUST be supplied]'
             <para>The cryptographer password, from which the internal MAC and cipher keys will be derived (using the ad-hoc salt; see below).
             THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.
             A cryptographically strong password MAY be used:</para>
@@ -263,16 +263,16 @@
             </screen>
           </listitem>
           <listitem>
-            <code>datacryptographer.password_algorithm</code>: P2SHA256
+            <code>datacryptographer.password_algorithm</code>: 'P2SHA256'
             <para>The password &lt;-&gt; internal key derivation algorithm.
             THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.</para>
           </listitem>
           <listitem>
-            <code>datacryptographer.hash_algorithm</code>: HSHA256
+            <code>datacryptographer.hash_algorithm</code>: 'HSHA256'
             <para>The default hash algorithm (used when persisting new entities)</para>
           </listitem>
           <listitem>
-            <code>datacryptographer.key_algorithm</code>: P2SHA256
+            <code>datacryptographer.key_algorithm</code>: 'P2SHA256'
             <para>The default key derivation algorithm (used when persisting new entities)</para>
           </listitem>
           <listitem>
@@ -280,11 +280,11 @@
             <para>The default key derivation iterations count (used when persisting new entities)</para>
           </listitem>
           <listitem>
-            <code>datacryptographer.mac_algorithm</code>: HSHA256
+            <code>datacryptographer.mac_algorithm</code>: 'HSHA256'
             <para>The default MAC algorithm (used when persisting new entities)</para>
           </listitem>
           <listitem>
-            <code>datacryptographer.mac_salt</code>: [no default; MUST be supplied]
+            <code>datacryptographer.mac_salt</code>: '[no default; MUST be supplied]'
             <para>The salt used to derive the internal MAC key from the password.
             THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.
             A cryptographically strong salt SHOULD be used:</para>
@@ -295,11 +295,11 @@
             </screen>
           </listitem>
           <listitem>
-            <code>datacryptographer.cipher_algorithm</code>: AES256
+            <code>datacryptographer.cipher_algorithm</code>: 'AES256'
             <para>The default (en/de)cipher algorithm (used when persisting new entities)</para>
           </listitem>
           <listitem>
-            <code>datacryptographer.cipher_salt</code>: [no default; MUST be supplied]
+            <code>datacryptographer.cipher_salt</code>: '[no default; MUST be supplied]'
             <para>The salt used to derive the internal cipher key from the password.
             THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED.
             A cryptographically strong salt SHOULD be used:</para>
@@ -398,7 +398,7 @@
     <para>Then, after triple-checking all DataCryptographer parameters (password/salts), one must TEMPORARILY disable its &quot;strict mode&quot; and update all affected entities/fields using the ad-hoc command line:</para>
     <screen>
       <![CDATA[
-  $ php ./app/console datacryptographer:update <entity-name>
+  $ php ./bin/console datacryptographer:update <entity-name>
       ]]>             
     </screen>
     <para>This will detect all DataCryptographer-related fields in the given entity, loop through all its entries, and update their content with their corresponding cryptographic counterpart (hash/MAC/cipher). When done, one should re-enable the DataCryptographer <literal>strict mode</literal>.</para>

@@ -13,5 +13,5 @@ parameters:
 
 services:
   DataCryptographer:
-    class: DataCryptographerBundle\DataCryptographer
-    arguments: [%datacryptographer.password%, %datacryptographer.password_algorithm%, 1, %datacryptographer.hash_algorithm%, %datacryptographer.key_algorithm%, %datacryptographer.key_iterations%, %datacryptographer.mac_algorithm%, %datacryptographer.mac_salt%, %datacryptographer.cipher_algorithm%, %datacryptographer.cipher_salt%, %datacryptographer.strict%]
+    class: 'DataCryptographerBundle\DataCryptographer'
+    arguments: ['%datacryptographer.password%', '%datacryptographer.password_algorithm%', 1, '%datacryptographer.hash_algorithm%', '%datacryptographer.key_algorithm%', '%datacryptographer.key_iterations%', '%datacryptographer.mac_algorithm%', '%datacryptographer.mac_salt%', '%datacryptographer.cipher_algorithm%', '%datacryptographer.cipher_salt%', '%datacryptographer.strict%']

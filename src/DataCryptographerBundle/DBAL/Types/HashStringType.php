@@ -47,7 +47,7 @@ use Doctrine\DBAL\Types\StringType;
  * doctrine:
  *   dbal:
  *     types:
- *       hash_string: DataCryptographerBundle\DBAL\Types\HashStringType
+ *       hash_string: 'DataCryptographerBundle\DBAL\Types\HashStringType'
  * </CODE>
  *
  * @package    DataCryptographerBundle

@@ -15,14 +15,14 @@ declaration MUST be added to your configuration:
   doctrine:
     dbal:
       types:
-        hash_string: DataCryptographerBundle\DBAL\Types\HashStringType
-        keyhash_string: DataCryptographerBundle\DBAL\Types\KeyHashStringType
-        cipher_string: DataCryptographerBundle\DBAL\Types\CipherStringType
-        cipher_text: DataCryptographerBundle\DBAL\Types\CipherTextType
+        hash_string: 'DataCryptographerBundle\DBAL\Types\HashStringType'
+        keyhash_string: 'DataCryptographerBundle\DBAL\Types\KeyHashStringType'
+        cipher_string: 'DataCryptographerBundle\DBAL\Types\CipherStringType'
+        cipher_text: 'DataCryptographerBundle\DBAL\Types\CipherTextType'
 
 The following parameters are available to configure the cryptographer service:
 
-  datacryptographer.password: [no default; MUST be supplied]
+  datacryptographer.password: '[no default; MUST be supplied]'
     The cryptographer password, from which the internal MAC and cipher keys
     will be derived (using the ad-hoc salt; see below)
     THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
@@ -31,23 +31,23 @@ The following parameters are available to configure the cryptographer service:
         | sha256sum \
         | sed 's/^\([^ ]*\).*$/{HEX}\1/'
 
-  datacryptographer.password_algorithm: P2SHA256
+  datacryptographer.password_algorithm: 'P2SHA256'
     The password <-> internal key derivation algorithm
     THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
    
-  datacryptographer.hash_algorithm: HSHA256
+  datacryptographer.hash_algorithm: 'HSHA256'
     The default hash algorithm (used when persisting new entities)
    
-  datacryptographer.key_algorithm: P2SHA256
+  datacryptographer.key_algorithm: 'P2SHA256'
     The default key derivation algorithm (used when persisting new entities)
    
   datacryptographer.key_iterations: 100000
     The default key derivation iterations count (used when persisting new entities)
    
-  datacryptographer.mac_algorithm: HSHA256
+  datacryptographer.mac_algorithm: 'HSHA256'
     The default MAC algorithm (used when persisting new entities)
    
-  datacryptographer.mac_salt: [no default; MUST be supplied]
+  datacryptographer.mac_salt: '[no default; MUST be supplied]'
     The salt used to derive the internal MAC key from the password
     THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
     A cryptographically strong salt SHOULD be used:
@@ -55,10 +55,10 @@ The following parameters are available to configure the cryptographer service:
         | sha256sum \
         | sed 's/^\([^ ]*\).*$/{HEX}\1/'
    
-  datacryptographer.cipher_algorithm: AES256
+  datacryptographer.cipher_algorithm: 'AES256'
     The default (en/de)cipher algorithm (used when persisting new entities)
    
-  datacryptographer.cipher_salt: [no default; MUST be supplied]
+  datacryptographer.cipher_salt: '[no default; MUST be supplied]'
     The salt used to derive the internal cipher key from the password
     THIS SETTING MUST NOT BE CHANGED ONCE DATA HAVE BEEN ENCIPHERED
     A cryptographically strong salt SHOULD be used:
@@ -118,7 +118,7 @@ Then, after triple-checking all DataCryptographer parameters (password/salts),
 one must TEMPORARILY disable its "strict mode" and update all affected
 entities/fields using the ad-hoc command line:
 
-  php ./app/console datacryptographer:update <entity-name>
+  php ./bin/console datacryptographer:update <entity-name>
 
 This will detect all DataCryptographer-related fields in the given entity, loop
 through all its entries, and update their content with their corresponding
