@@ -1,17 +1,18 @@
 # DataCryptographerBundle\Resources\config\services.yml
 parameters:
-    datacryptographer.password:
+    datacryptographer.password: '%env(DATACRYPTOGRAPHER_PASSWORD)%'
     datacryptographer.password_algorithm: 'P2SHA256'
     datacryptographer.hash_algorithm: 'HSHA256'
     datacryptographer.key_algorithm: 'P2SHA256'
     datacryptographer.key_iterations: 100000
     datacryptographer.mac_algorithm: 'HSHA256'
-    datacryptographer.mac_salt:
+    datacryptographer.mac_salt: '%env(DATACRYPTOGRAPHER_MAC_SALT)%'
     datacryptographer.cipher_algorithm: 'AES256'
-    datacryptographer.cipher_salt:
+    datacryptographer.cipher_salt: '%env(DATACRYPTOGRAPHER_CIPHER_SALT)%'
     datacryptographer.strict: true
 
 services:
   DataCryptographer:
+    public: true
     class: 'DataCryptographerBundle\DataCryptographer'
     arguments: ['%datacryptographer.password%', '%datacryptographer.password_algorithm%', 1, '%datacryptographer.hash_algorithm%', '%datacryptographer.key_algorithm%', '%datacryptographer.key_iterations%', '%datacryptographer.mac_algorithm%', '%datacryptographer.mac_salt%', '%datacryptographer.cipher_algorithm%', '%datacryptographer.cipher_salt%', '%datacryptographer.strict%']
