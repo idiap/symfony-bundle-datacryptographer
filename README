@@ -18,5 +18,5 @@ which allow to transparently perform the given cryptographic operations on data 
 
 ## Dependencies
 
- - [MUST] Symfony 2.7 or later
- - [MUST] PHP 5.6 or later
+    - [MUST] Symfony 2.7 or later
+    - [MUST] PHP 5.6 or later
