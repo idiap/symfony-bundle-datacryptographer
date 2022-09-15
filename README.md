@@ -1,6 +1,5 @@
 # Data Cryptographer Bundle
 
-
 ## Synopsis
 
 The Data Cryptographer Bundle is a PHP/Symfony bundle which provides a cryptographer resource/service for common cryptographic operations:
