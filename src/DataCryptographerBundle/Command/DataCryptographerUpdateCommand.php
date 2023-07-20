@@ -35,7 +35,7 @@ use DataCryptographerBundle\DBAL\Types\KeyHashStringType;
 use DataCryptographerBundle\DBAL\Types\CipherStringType;
 use DataCryptographerBundle\DBAL\Types\CipherTextType;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,138 +43,136 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /** Update cryptographer-related entities
  */
-class DataCryptographerUpdateCommand
-extends ContainerAwareCommand
+class DataCryptographerUpdateCommand extends Command
 {
 
   /*
    * METHODS: ContainerAwareCommand
    ********************************************************************************/
 
-  protected function configure()
-  {
-    $this
-      ->setName('datacryptographer:update')
-      ->setDescription('Update the DataCryptographer-related fields of the given entity')
-      ->addArgument(
-        'entity',
-        InputArgument::REQUIRED,
-        'Entity to update (<bundle-name>:<entity-name>)'
-      )
-      ->addOption(
-        'encoding',
-        null,
-        InputOption::VALUE_REQUIRED,
-        'Change the output encoding'
-      )
-      ->addOption(
-        'dry-run',
-        null,
-        InputOption::VALUE_NONE,
-        'Dry-run; check which of the entity fields will be updated'
-      )
-      ->addOption(
-        'I-DO-have-a-backup',
-        null,
-        InputOption::VALUE_NONE,
-        'Shamelessly bail out unless you truly know what you\'re doing'
-      )
-      ;
-  }
-
-  protected function execute(InputInterface $oInputInterface, OutputInterface $oOutputInterface)
-  {
-    // Resources
-    $oContainer = $this->getContainer();
-
-    // Input
-
-    // ... entity
-    $sEntity = $oInputInterface->getArgument('entity');
-
-    // Resources (cont'd)
-    $oEntityManager = $oContainer->get('doctrine')->getManagerForClass($sEntity);
-
-    // Retrieve DataCryptographer-related fields
-    $oClassMetadata = $oEntityManager->getClassMetadata($sEntity);
-    $asFields = $oClassMetadata->getFieldNames();
-    $asFields_cryptographer = array();
-    foreach ($asFields as $sField) {
-      $mTypeOfField = $oClassMetadata->getTypeOfField($sField);
-      if (!is_object($mTypeOfField)) $mTypeOfField = \Doctrine\DBAL\Types\Type::getType($mTypeOfField);
-      if (
-        $mTypeOfField instanceof HashStringType or
-        $mTypeOfField instanceof KeyHashStringType or
-        $mTypeOfField instanceof CipherStringType or
-        $mTypeOfField instanceof CipherTextType
-      ) {
-        $asFields_cryptographer[$sField] = array(
-          $mTypeOfField,
-          sprintf('get%s', $sField),  // getter
-          sprintf('set%s', $sField),  // setter
-        );
-      }
+    protected function configure()
+    {
+        $this
+            ->setName('datacryptographer:update')
+            ->setDescription('Update the DataCryptographer-related fields of the given entity')
+            ->addArgument(
+              'entity',
+              InputArgument::REQUIRED,
+              'Entity to update (<bundle-name>:<entity-name>)'
+            )
+            ->addOption(
+              'encoding',
+              null,
+              InputOption::VALUE_REQUIRED,
+              'Change the output encoding'
+            )
+            ->addOption(
+              'dry-run',
+              null,
+              InputOption::VALUE_NONE,
+              'Dry-run; check which of the entity fields will be updated'
+            )
+            ->addOption(
+              'I-DO-have-a-backup',
+              null,
+              InputOption::VALUE_NONE,
+              'Shamelessly bail out unless you truly know what you\'re doing'
+            );
     }
 
-    // ... output
-    $oOutputInterface->writeln('Cryptographer-related fields are:');
-    $oOutputInterface->writeln(sprintf('  %s', $sEntity));
-    foreach ($asFields_cryptographer as $sField => $aField) {
-      $oOutputInterface->writeln(sprintf('    %s (%s)', $sField, get_class($aField[0])));
-    }
+    protected function execute(InputInterface $oInputInterface, OutputInterface $oOutputInterface)
+    {
+        // Resources
+        $oContainer = $this->getContainer();
 
-    // Dry-run ?
-    if ($oInputInterface->getOption('dry-run')) {
-      return;
-    }
+        // Input
 
-    // Do you have a backup ?
-    if (!$oInputInterface->getOption('I-DO-have-a-backup')) {
-      $oOutputInterface->writeln('');
-      $oOutputInterface->writeln('!!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!!');
-      $oOutputInterface->writeln('');
-      $oOutputInterface->writeln('                     BACKUP YOUR DATA BEFORE PROCDEEDING');
-      $oOutputInterface->writeln('');
-      $oOutputInterface->writeln('In case some misconfiguration or error affects the cryptographic operations,');
-      $oOutputInterface->writeln('               YOUR DATA MAY BECOME IRREVERSIBLY IRRECOVERABLE');
-      $oOutputInterface->writeln('');
-      $oOutputInterface->writeln('!!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!!');
-      return;
-    }
+        // ... entity
+        $sEntity = $oInputInterface->getArgument('entity');
 
-    // Resources (cont'd)
-    $oDataCryptographer = $oContainer->get('DataCryptographer');
-    $sEncoding = $oInputInterface->getOption('encoding');
-    if (!is_null($sEncoding)) $oDataCryptographer->changeEncoding($sEncoding);
+        // Resources (cont'd)
+        $oEntityManager = $oContainer->get('doctrine')->getManagerForClass($sEntity);
 
-    // Update fields
-    $oOutputInterface->write('Updating entries');
-    $oRepository = $oEntityManager->getRepository($sEntity);
-    $i = 0;
-    foreach (@$oRepository->findAll() as $oEntity) {
-      $oOutputInterface->write('.');
-      $i++;
-      foreach ($asFields_cryptographer as $sField => $aField) {
-        $mTypeOfField = $aField[0];
-        $sField_get = $aField[1];
-        $sField_set = $aField[2];
-        $mValue = $oEntity->$sField_get();
-        if (is_null($mValue)) continue;
-        if ($mTypeOfField instanceof HashStringType) {
-          if ($oDataCryptographer->hashHeader($mValue)) continue;
-          $oEntity->$sField_set($oDataCryptographer->hash($mValue));
-        } elseif ($mTypeOfField instanceof KeyHashStringType) {
-          if ($oDataCryptographer->keyHeader($mValue)) continue;
-          $oEntity->$sField_set($oDataCryptographer->key($mValue));
-        } elseif ($mTypeOfField instanceof CipherStringType or $mTypeOfField instanceof CipherTextType) {
-          if ($oDataCryptographer->cipherHeader($mValue)) continue; // this MAY happen if the configured password/salts do not match the data
-          $oEntity->$sField_set($oDataCryptographer->encipher($mValue));
+        // Retrieve DataCryptographer-related fields
+        $oClassMetadata = $oEntityManager->getClassMetadata($sEntity);
+        $asFields = $oClassMetadata->getFieldNames();
+        $asFields_cryptographer = array();
+        foreach ($asFields as $sField) {
+          $mTypeOfField = $oClassMetadata->getTypeOfField($sField);
+          if (!is_object($mTypeOfField)) $mTypeOfField = \Doctrine\DBAL\Types\Type::getType($mTypeOfField);
+          if (
+              $mTypeOfField instanceof HashStringType or
+              $mTypeOfField instanceof KeyHashStringType or
+              $mTypeOfField instanceof CipherStringType or
+              $mTypeOfField instanceof CipherTextType
+          ) {
+              $asFields_cryptographer[$sField] = array(
+                  $mTypeOfField,
+                  sprintf('get%s', $sField),  // getter
+                  sprintf('set%s', $sField),  // setter
+              );
+          }
         }
-        $oEntityManager->flush();
-      }
-    }
-    $oOutputInterface->writeln('');
-    $oOutputInterface->writeln(sprintf('  %d entries updated', $i));
-  }
 
+        // ... output
+        $oOutputInterface->writeln('Cryptographer-related fields are:');
+        $oOutputInterface->writeln(sprintf('  %s', $sEntity));
+        foreach ($asFields_cryptographer as $sField => $aField) {
+            $oOutputInterface->writeln(sprintf('    %s (%s)', $sField, get_class($aField[0])));
+        }
+
+        // Dry-run ?
+        if ($oInputInterface->getOption('dry-run')) {
+            return;
+        }
+
+        // Do you have a backup ?
+        if (!$oInputInterface->getOption('I-DO-have-a-backup')) {
+            $oOutputInterface->writeln('');
+            $oOutputInterface->writeln('!!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!!');
+            $oOutputInterface->writeln('');
+            $oOutputInterface->writeln('                     BACKUP YOUR DATA BEFORE PROCDEEDING');
+            $oOutputInterface->writeln('');
+            $oOutputInterface->writeln('In case some misconfiguration or error affects the cryptographic operations,');
+            $oOutputInterface->writeln('               YOUR DATA MAY BECOME IRREVERSIBLY IRRECOVERABLE');
+            $oOutputInterface->writeln('');
+            $oOutputInterface->writeln('!!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!!');
+            return;
+        }
+
+        // Resources (cont'd)
+        $oDataCryptographer = $oContainer->get('DataCryptographer');
+        $sEncoding = $oInputInterface->getOption('encoding');
+        if (!is_null($sEncoding)) $oDataCryptographer->changeEncoding($sEncoding);
+
+        // Update fields
+        $oOutputInterface->write('Updating entries');
+        $oRepository = $oEntityManager->getRepository($sEntity);
+        $i = 0;
+        foreach (@$oRepository->findAll() as $oEntity) {
+            $oOutputInterface->write('.');
+            $i++;
+            foreach ($asFields_cryptographer as $sField => $aField) {
+                $mTypeOfField = $aField[0];
+                $sField_get = $aField[1];
+                $sField_set = $aField[2];
+                $mValue = $oEntity->$sField_get();
+                if (is_null($mValue)) continue;
+                if ($mTypeOfField instanceof HashStringType) {
+                    if ($oDataCryptographer->hashHeader($mValue)) continue;
+                    $oEntity->$sField_set($oDataCryptographer->hash($mValue));
+                } elseif ($mTypeOfField instanceof KeyHashStringType) {
+                    if ($oDataCryptographer->keyHeader($mValue)) continue;
+                    $oEntity->$sField_set($oDataCryptographer->key($mValue));
+                } elseif ($mTypeOfField instanceof CipherStringType or $mTypeOfField instanceof CipherTextType) {
+                    if ($oDataCryptographer->cipherHeader($mValue)) continue; // this MAY happen if the configured password/salts do not match the data
+                    $oEntity->$sField_set($oDataCryptographer->encipher($mValue));
+                }
+                $oEntityManager->flush();
+            }
+        }
+        $oOutputInterface->writeln('');
+        $oOutputInterface->writeln(sprintf('  %d entries updated', $i));
+    }
 }
+
